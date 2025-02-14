@@ -6,78 +6,107 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 
 export async function POST(req) {
+    // Comprehensive environment variable check
+    console.log('Checking environment variables:');
+    console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'SET' : 'NOT SET');
+    console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');
+
+    // Validate critical environment variables
+    if (!process.env.MONGODB_URI) {
+        console.error('CRITICAL ERROR: MONGODB_URI is NOT configured');
+        return NextResponse.json(
+            { error: 'Server configuration error: Database URI is missing' },
+            { status: 500 }
+        );
+    }
+
+    if (!process.env.JWT_SECRET) {
+        console.error('CRITICAL ERROR: JWT_SECRET is NOT configured');
+        return NextResponse.json(
+            { error: 'Server configuration error: JWT Secret is missing' },
+            { status: 500 }
+        );
+    }
+
     try {
-        // Connect to DB with error handling
-        const db = await dbConnect();
-        if (!db) {
+        // Ensure database connection
+        await dbConnect();
+
+        // Parse request body
+        const { email, password } = await req.json();
+
+        // Validate input
+        if (!email || !password) {
             return NextResponse.json(
-                { error: 'Database connection failed' },
-                { status: 503 }
+                { error: 'Email and password are required' },
+                { status: 400 }
             );
         }
 
-        const { email, password } = await req.json();
-
+        // Find user by email
         const user = await User.findOne({ email });
         if (!user) {
             return NextResponse.json(
-                { error: 'Invalid credentials' },
+                { error: 'Invalid email or password' },
                 { status: 401 }
             );
         }
 
-        const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) {
+        // Verify password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
             return NextResponse.json(
-                { error: 'Invalid credentials' },
+                { error: 'Invalid email or password' },
                 { status: 401 }
             );
         }
 
-        // Safer JWT secret handling
-        if (!process.env.JWT_SECRET) {
-            console.warn('JWT_SECRET not found in environment variables');
-        }
-        
-        const secret = process.env.JWT_SECRET || 'your_secret_key_here';
-
+        // Create JWT token
         const token = jwt.sign(
             { 
                 userId: user._id,
-                email: user.email
-            }, 
-            secret,
+                email: user.email 
+            },
+            process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
 
-        // Clean user data for response
-        const userData = {
-            _id: user._id.toString(), // Convert ObjectId to string
-            name: user.name,
-            email: user.email
-        };
-
+        // Create response with cookie
         const response = NextResponse.json(
             { 
-                success: true, 
-                user: userData 
-            }, 
+                message: 'Login successful',
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                }
+            },
             { status: 200 }
         );
-        
-        // Set cookie with more secure options
+
+        // Set HTTP-only cookie
         response.cookies.set('token', token, {
             httpOnly: true,
-            secure: true, // Always use secure in modern apps
-            sameSite: 'lax', // Better compatibility than 'strict'
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
             maxAge: 60 * 60 * 24 * 7 // 7 days
         });
 
         return response;
+
     } catch (error) {
-        console.error('Login Error:', error.message);
+        // Detailed error logging
+        console.error('Comprehensive Login Error:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack
+        });
+
         return NextResponse.json(
-            { error: 'Authentication failed' }, // More generic error message
+            { 
+                error: 'Internal server error',
+                details: error.message 
+            },
             { status: 500 }
         );
     }
