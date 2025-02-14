@@ -88,18 +88,17 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-lg font-semibold transition-all duration-200 disabled:opacity-50"
+                            className="w-full py-3 bg-purple-600 text-white rounded-xl transition-colors hover:bg-purple-700"
                         >
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? 'Logging in...' : 'Login'}
                         </button>
+                        <p className="mt-4 text-center">
+                            Don't have an account?{' '}
+                            <Link href="/register" className="text-purple-600">
+                                Register
+                            </Link>
+                        </p>
                     </form>
-
-                    <div className="mt-6 text-center text-gray-400">
-                        Don't have an account?{' '}
-                        <Link href="/register" className="text-purple-400 hover:text-purple-300">
-                            Create one
-                        </Link>
-                    </div>
                 </div>
             </div>
         </main>

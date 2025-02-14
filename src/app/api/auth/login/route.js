@@ -26,26 +26,30 @@ export async function POST(req) {
             );
         }
 
-        const token = jwt.sign(
-            { userId: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '7d' }
-        );
+        // Ensure JWT_SECRET is configured in your (.env) file
+        const secret = process.env.JWT_SECRET || 'defaultsecret';
 
-        const response = NextResponse.json(
-            { success: true },
-            { status: 200 }
-        );
+        const token = jwt.sign({ userId: user._id }, secret, { expiresIn: '7d' });
 
+        // Prepare user data for the client (without the password)
+        const userData = {
+            _id: user._id,
+            name: user.name,
+            email: user.email
+        };
+
+        const response = NextResponse.json({ success: true, user: userData }, { status: 200 });
+        
         response.cookies.set('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 7
+            maxAge: 60 * 60 * 24 * 7 // 7 days
         });
 
         return response;
     } catch (error) {
+        console.error('Login Error:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
             { status: 500 }

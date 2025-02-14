@@ -14,7 +14,7 @@
     "framer-motion": "^12.0.6",
     "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.10.0",
+    "mongoose": "6.12.0",
     "next": "15.1.6",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",

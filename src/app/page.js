@@ -1,83 +1,96 @@
 // src/app/page.js
+import Navbar from '@/components/shared/Navbar';
 import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-black to-purple-950/20">
-      <div className="relative h-screen flex items-center justify-center px-4">
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(76,29,149,0.15),transparent_70%)]" />
-        
-        <div className="relative z-10 max-w-7xl mx-auto text-center">
-          {/* Hero Text */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white">
-            No One Sleeps Hungry
-          </h1>
-          
-          <p className="text-lg sm:text-xl md:text-2xl text-purple-200/90 mb-12 max-w-2xl mx-auto">
-            Join the movement to end hunger in our community
-          </p>
-
-          {/* Action Cards */}
-          <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
-            {/* Need Food Card */}
-            <div className="group relative p-[1px] bg-gradient-to-r from-purple-500 to-purple-700 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-              <Link href="/find-food" className="block">
-                <div className="relative h-full bg-black rounded-2xl p-6 sm:p-8">
-                  <div className="space-y-4">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white">I Need Food</h2>
-                    <p className="text-purple-200/80">
-                      Connect instantly with food providers near you
-                    </p>
-                    <span className="inline-flex items-center text-purple-300">
-                      Get Started
-                      <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
+    <>
+      <Navbar />
+      <main className="mt-16">
+        {/* Hero Section */}
+        <section
+          className="relative h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-indigo-900"
+        >
+          <div className="relative max-w-7xl mx-auto px-4 text-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white">
+              Seva: Share Food, Share Love
+            </h1>
+            <p className="mt-4 text-xl text-gray-200">
+              Connecting food donors with those in need to create lasting impact.
+            </p>
+            <div className="mt-8 flex justify-center gap-6">
+              <Link
+                href="/login"
+                className="px-6 py-3 bg-white text-purple-700 font-semibold rounded-lg shadow hover:bg-gray-100 transition"
+              >
+                Login
               </Link>
-            </div>
-
-            {/* Have Food Card */}
-            <div className="group relative p-[1px] bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-2xl hover:scale-[1.02] transition-transform duration-300">
-              <Link href="/share-food" className="block">
-                <div className="relative h-full bg-black rounded-2xl p-6 sm:p-8">
-                  <div className="space-y-4">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white">I Have Food</h2>
-                    <p className="text-indigo-200/80">
-                      Share your excess and make a direct impact
-                    </p>
-                    <span className="inline-flex items-center text-indigo-300">
-                      Start Sharing
-                      <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
+              <Link
+                href="/register"
+                className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow hover:bg-purple-700 transition"
+              >
+                Sign Up
               </Link>
             </div>
           </div>
+        </section>
 
-          {/* Stats */}
-          <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div>
-              <div className="text-3xl font-bold text-white">15K+</div>
-              <div className="text-purple-200/70 text-sm">Meals Shared</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-white">5K+</div>
-              <div className="text-purple-200/70 text-sm">Active Users</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-white">200+</div>
-              <div className="text-purple-200/70 text-sm">Communities</div>
+        {/* Our Mission Section */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center text-gray-800">Our Mission</h2>
+            <p className="mt-4 text-center text-gray-600 text-lg">
+              At Seva, sharing food is sharing love. Our platform connects communities by linking those with extra food to neighbors in need.
+            </p>
+            <div className="mt-12 grid md:grid-cols-2 gap-8">
+              <div className="flex flex-col justify-center">
+                <h3 className="text-2xl font-semibold text-gray-800">For Food Donors</h3>
+                <p className="mt-2 text-gray-600">
+                  Easily list your extra food and help reduce waste while feeding those in need.
+                </p>
+              </div>
+              <div className="flex flex-col justify-center">
+                <h3 className="text-2xl font-semibold text-gray-800">For Food Recipients</h3>
+                <p className="mt-2 text-gray-600">
+                  Find nearby food donations quickly and securely from generous community members.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </main>
+        </section>
+
+        {/* Impact Stories Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center text-gray-800">Real Stories, Real Impact</h2>
+            <div className="mt-8 grid md:grid-cols-2 gap-8">
+              <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition">
+                <p className="text-gray-600">
+                  "Seva connected our community during a challenging time. Seeing neighbors support one another has revived our communal spirit."
+                </p>
+                <p className="mt-4 font-semibold text-gray-800">- Anjali M.</p>
+              </div>
+              <div className="p-6 bg-white rounded-lg shadow hover:shadow-lg transition">
+                <p className="text-gray-600">
+                  "Donating food through Seva was incredibly fulfilling. It's amazing how a simple act of generosity can change lives."
+                </p>
+                <p className="mt-4 font-semibold text-gray-800">- Rohit S.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-gray-800 text-gray-300 py-8">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; {new Date().getFullYear()} Seva. All rights reserved.</p>
+            <div className="mt-4 flex justify-center gap-4">
+              <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
+              <Link href="/terms" className="hover:underline">Terms &amp; Conditions</Link>
+            </div>
+          </div>
+        </footer>
+      </main>
+    </>
   );
 }
