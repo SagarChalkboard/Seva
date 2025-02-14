@@ -6,7 +6,7 @@ if (!process.env.MONGODB_URI) {
     console.warn('No MONGODB_URI found, checking connection string');
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://your-connection-string";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://Sagar:Ilovecoding786@clusterfood.nzvnq.mongodb.net/?retryWrites=true&w=majority&appName=ClusterFood";
 
 let cached = global.mongoose;
 
