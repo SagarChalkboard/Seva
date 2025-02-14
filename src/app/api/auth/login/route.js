@@ -39,7 +39,7 @@ export async function POST(req) {
             console.warn('JWT_SECRET not found in environment variables');
         }
         
-        const secret = process.env.JWT_SECRET || 'seva_default_secret_key_do_not_use_in_production';
+        const secret = process.env.JWT_SECRET || 'your_secret_key_here';
 
         const token = jwt.sign(
             { 
