@@ -1,106 +1,239 @@
+// src/app/dashboard/page.js
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Navbar from '@/components/shared/Navbar';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { MapPin, Users, Package, Clock, TrendingUp, Award } from 'lucide-react';
+
+// Move data outside component
+const initialStats = {
+    totalDonations: 0,
+    peopleHelped: 0,
+    activeListings: 0,
+    impactScore: 0,
+    totalWeight: "0",
+    communityRank: "#0"
+};
+
+const impactData = [
+    { month: 'Jan', donations: 65, people: 120 },
+    { month: 'Feb', donations: 78, people: 150 },
+    { month: 'Mar', donations: 92, people: 170 },
+    { month: 'Apr', donations: 85, people: 160 },
+    { month: 'May', donations: 105, people: 190 },
+    { month: 'Jun', donations: 152, people: 280 },
+];
 
 export default function Dashboard() {
-    const router = useRouter();
-    const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
+    const [listings, setListings] = useState([]);
+    const [stats, setStats] = useState(initialStats);
 
     useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await fetch('/api/auth/check');
-                if (!res.ok) {
-                    router.push('/login');
-                } else {
-                    setLoading(false);
-                }
-            } catch (error) {
-                router.push('/login');
-            }
-        };
-        
-        checkAuth();
-    }, [router]);
+        setMounted(true);
+        // Simulate data fetch
+        setStats({
+            totalDonations: 152,
+            peopleHelped: 478,
+            activeListings: 3,
+            impactScore: 892,
+            totalWeight: "1,235",
+            communityRank: "#12"
+        });
+    }, []);
 
-    if (loading) {
+    // Don't render anything until after client-side hydration
+    if (!mounted) {
         return (
-            <div className="min-h-screen bg-black flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-            </div>
-        );
-    }
-
-    return (
-        <>
-            <Navbar />
             <main className="min-h-screen bg-black pt-20">
-                <div className="max-w-7xl mx-auto px-4 py-8">
-                    {/* Welcome Section */}
-                    <div className="mb-8">
-                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
-                            Welcome to Your Dashboard
-                        </h1>
-                        <p className="text-gray-400 mt-2">
-                            Make a difference in your community today
-                        </p>
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                        <Link href="/share-food" 
-                            className="p-6 bg-gradient-to-br from-purple-900 to-indigo-900 rounded-2xl border border-purple-500/20 hover:border-purple-500/40 transition-all group">
-                            <h2 className="text-2xl font-semibold text-white mb-2">Share Food</h2>
-                            <p className="text-gray-300 mb-4">List your excess food and help those in need</p>
-                            <span className="text-purple-400 group-hover:text-purple-300 transition-colors">
-                                Get Started →
-                            </span>
-                        </Link>
-
-                        <Link href="/find-food"
-                            className="p-6 bg-gradient-to-br from-blue-900 to-indigo-900 rounded-2xl border border-blue-500/20 hover:border-blue-500/40 transition-all group">
-                            <h2 className="text-2xl font-semibold text-white mb-2">Find Food</h2>
-                            <p className="text-gray-300 mb-4">Discover available food donations near you</p>
-                            <span className="text-blue-400 group-hover:text-blue-300 transition-colors">
-                                Search Now →
-                            </span>
-                        </Link>
-                    </div>
-
-                    {/* Recent Activity */}
-                    <div className="bg-gray-900 rounded-2xl p-6 border border-purple-500/20">
-                        <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2>
-                        <div className="space-y-4">
-                            {/* Placeholder for recent activities */}
-                            <div className="flex items-center justify-between p-4 bg-gray-800 rounded-xl">
-                                <div>
-                                    <h3 className="text-white font-medium">Coming Soon!</h3>
-                                    <p className="text-gray-400 text-sm">Track your food sharing journey here</p>
-                                </div>
-                                <span className="text-gray-500">•••</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Impact Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                        <div className="bg-gray-900 p-6 rounded-xl border border-purple-500/20">
-                            <h3 className="text-gray-400 text-sm">Total Shares</h3>
-                            <p className="text-2xl font-bold text-white mt-1">0</p>
-                        </div>
-                        <div className="bg-gray-900 p-6 rounded-xl border border-purple-500/20">
-                            <h3 className="text-gray-400 text-sm">People Helped</h3>
-                            <p className="text-2xl font-bold text-white mt-1">0</p>
-                        </div>
-                        <div className="bg-gray-900 p-6 rounded-xl border border-purple-500/20">
-                            <h3 className="text-gray-400 text-sm">Community Rating</h3>
-                            <p className="text-2xl font-bold text-white mt-1">New Member</p>
+                <div className="max-w-7xl mx-auto px-4 py-12">
+                    <div className="animate-pulse">
+                        {/* Loading skeleton */}
+                        <div className="h-8 w-48 bg-gray-800 rounded mb-4"></div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[...Array(3)].map((_, i) => (
+                                <div key={i} className="h-48 bg-gray-800 rounded-xl"></div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </main>
-        </>
+        );
+    }
+
+    // Rest of your component code stays the same...
+
+    return (
+        <main className="min-h-screen bg-black pt-20">
+            <div className="max-w-7xl mx-auto px-4 py-12">
+                {/* Header with Welcome Message */}
+                <div className="flex justify-between items-center mb-12">
+                    <div>
+                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
+                            Welcome Back, Hero
+                        </h1>
+                        <p className="text-gray-400 mt-2">
+                            Your impact is making waves in the community
+                        </p>
+                    </div>
+                    <Link 
+                        href="/share-food"
+                        className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl transition-all transform hover:scale-105"
+                    >
+                        Share Food
+                    </Link>
+                </div>
+
+                {/* Impact Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
+                        <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <Package className="w-6 h-6 text-purple-400" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-400">Total Donations</p>
+                                <h3 className="text-3xl font-bold text-white">{stats.totalDonations}</h3>
+                            </div>
+                        </div>
+                        <div className="h-20">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={impactData}>
+                                    <Area type="monotone" dataKey="donations" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.2} />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
+                        <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <Users className="w-6 h-6 text-indigo-400" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-400">People Helped</p>
+                                <h3 className="text-3xl font-bold text-white">{stats.peopleHelped}</h3>
+                            </div>
+                        </div>
+                        <div className="h-20">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={impactData}>
+                                    <Area type="monotone" dataKey="people" stroke="#6366f1" fill="#6366f1" fillOpacity={0.2} />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
+                        <div className="flex items-center mb-4">
+                            <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mr-4">
+                                <Award className="w-6 h-6 text-green-400" />
+                            </div>
+                            <div>
+                                <p className="text-sm text-gray-400">Impact Score</p>
+                                <h3 className="text-3xl font-bold text-white">{stats.impactScore}</h3>
+                            </div>
+                        </div>
+                        <p className="text-green-400 text-sm flex items-center">
+                            <TrendingUp className="w-4 h-4 mr-1" />
+                            +24.8% this month
+                        </p>
+                    </div>
+                </div>
+
+                {/* Main Chart */}
+                <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20 mb-12">
+                    <h2 className="text-xl font-bold text-white mb-6">Impact Overview</h2>
+                    <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={impactData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                                <XAxis dataKey="month" stroke="#9CA3AF" />
+                                <YAxis stroke="#9CA3AF" />
+                                <Tooltip 
+                                    contentStyle={{ 
+                                        backgroundColor: '#1F2937', 
+                                        border: 'none',
+                                        borderRadius: '0.5rem',
+                                        color: '#F3F4F6'
+                                    }}
+                                />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="donations" 
+                                    stroke="#8B5CF6" 
+                                    strokeWidth={2}
+                                    dot={{ r: 4, fill: '#8B5CF6' }}
+                                    activeDot={{ r: 8 }}
+                                />
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="people" 
+                                    stroke="#6366F1" 
+                                    strokeWidth={2}
+                                    dot={{ r: 4, fill: '#6366F1' }}
+                                    activeDot={{ r: 8 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Recent Activity & Listings */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Active Listings */}
+                    <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
+                        <h2 className="text-xl font-bold text-white mb-6">Active Listings</h2>
+                        <div className="space-y-4">
+                            {listings.map((listing) => (
+                                <div key={listing._id} className="bg-gray-800/50 rounded-xl p-4 border border-purple-500/10">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="text-white font-medium">{listing.title}</h3>
+                                            <p className="text-gray-400 text-sm">{listing.quantity}</p>
+                                        </div>
+                                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
+                                            Active
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Community Activity */}
+                    <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
+                        <h2 className="text-xl font-bold text-white mb-6">Community Impact</h2>
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center mr-4">
+                                        <Award className="w-5 h-5 text-purple-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-white">Community Rank</p>
+                                        <p className="text-gray-400 text-sm">Top contributors</p>
+                                    </div>
+                                </div>
+                                <span className="text-2xl font-bold text-white">{stats.communityRank}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                    <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center mr-4">
+                                        <Package className="w-5 h-5 text-indigo-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-white">Total Weight</p>
+                                        <p className="text-gray-400 text-sm">Food shared (kg)</p>
+                                    </div>
+                                </div>
+                                <span className="text-2xl font-bold text-white">{stats.totalWeight}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     );
 }
