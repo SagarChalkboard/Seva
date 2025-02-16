@@ -6,16 +6,6 @@ import Link from 'next/link';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { MapPin, Users, Package, Clock, TrendingUp, Award } from 'lucide-react';
 
-// Move data outside component
-const initialStats = {
-    totalDonations: 0,
-    peopleHelped: 0,
-    activeListings: 0,
-    impactScore: 0,
-    totalWeight: "0",
-    communityRank: "#0"
-};
-
 const impactData = [
     { month: 'Jan', donations: 65, people: 120 },
     { month: 'Feb', donations: 78, people: 150 },
@@ -25,14 +15,36 @@ const impactData = [
     { month: 'Jun', donations: 152, people: 280 },
 ];
 
+const initialStats = {
+    totalDonations: 0,
+    peopleHelped: 0,
+    activeListings: 0,
+    impactScore: 0,
+    totalWeight: "0",
+    communityRank: "#0"
+};
+
 export default function Dashboard() {
+    const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [listings, setListings] = useState([]);
     const [stats, setStats] = useState(initialStats);
 
     useEffect(() => {
+        const fetchListings = async () => {
+            try {
+                const res = await fetch('/api/listings/user');
+                if (res.ok) {
+                    const data = await res.json();
+                    setListings(data.listings);
+                }
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+            }
+        };
+
         setMounted(true);
-        // Simulate data fetch
+        fetchListings();
         setStats({
             totalDonations: 152,
             peopleHelped: 478,
@@ -43,13 +55,11 @@ export default function Dashboard() {
         });
     }, []);
 
-    // Don't render anything until after client-side hydration
     if (!mounted) {
         return (
             <main className="min-h-screen bg-black pt-20">
                 <div className="max-w-7xl mx-auto px-4 py-12">
                     <div className="animate-pulse">
-                        {/* Loading skeleton */}
                         <div className="h-8 w-48 bg-gray-800 rounded mb-4"></div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {[...Array(3)].map((_, i) => (
@@ -62,12 +72,10 @@ export default function Dashboard() {
         );
     }
 
-    // Rest of your component code stays the same...
-
     return (
         <main className="min-h-screen bg-black pt-20">
             <div className="max-w-7xl mx-auto px-4 py-12">
-                {/* Header with Welcome Message */}
+                {/* Header */}
                 <div className="flex justify-between items-center mb-12">
                     <div>
                         <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
@@ -85,8 +93,8 @@ export default function Dashboard() {
                     </Link>
                 </div>
 
-                {/* Impact Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
                         <div className="flex items-center mb-4">
                             <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mr-4">
@@ -142,7 +150,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Main Chart */}
+                {/* Impact Chart */}
                 <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20 mb-12">
                     <h2 className="text-xl font-bold text-white mb-6">Impact Overview</h2>
                     <div className="h-80">
@@ -180,18 +188,39 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Recent Activity & Listings */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Active Listings */}
-                    <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
-                        <h2 className="text-xl font-bold text-white mb-6">Active Listings</h2>
+                {/* Active Listings */}
+                <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20 mb-12">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-bold text-white">Active Listings</h2>
+                        <Link 
+                            href="/share-food"
+                            className="text-purple-400 hover:text-purple-300 text-sm"
+                        >
+                            Create New
+                        </Link>
+                    </div>
+                    
+                    {listings.length === 0 ? (
+                        <div className="text-center py-8">
+                            <p className="text-gray-400 mb-4">No active listings</p>
+                            <Link 
+                                href="/share-food"
+                                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
+                            >
+                                Share Food
+                            </Link>
+                        </div>
+                    ) : (
                         <div className="space-y-4">
                             {listings.map((listing) => (
                                 <div key={listing._id} className="bg-gray-800/50 rounded-xl p-4 border border-purple-500/10">
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h3 className="text-white font-medium">{listing.title}</h3>
-                                            <p className="text-gray-400 text-sm">{listing.quantity}</p>
+                                            <p className="text-gray-400 text-sm">Quantity: {listing.quantity}</p>
+                                            <p className="text-gray-400 text-sm">
+                                                Available until: {new Date(listing.availableUntil).toLocaleString()}
+                                            </p>
                                         </div>
                                         <span className="px-2 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
                                             Active
@@ -200,9 +229,11 @@ export default function Dashboard() {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    )}
+                </div>
 
-                    {/* Community Activity */}
+                {/* Community Stats */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20">
                         <h2 className="text-xl font-bold text-white mb-6">Community Impact</h2>
                         <div className="space-y-6">
