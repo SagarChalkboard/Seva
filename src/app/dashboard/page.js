@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { MapPin, Users, Package, Clock, TrendingUp, Award } from 'lucide-react';
+import { MapPin, Users, Package, TrendingUp, Award } from 'lucide-react';
+import FoodMap from '@/components/FoodMap';
 
 const impactData = [
     { month: 'Jan', donations: 65, people: 120 },
@@ -29,17 +30,23 @@ export default function Dashboard() {
     const [mounted, setMounted] = useState(false);
     const [listings, setListings] = useState([]);
     const [stats, setStats] = useState(initialStats);
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchListings = async () => {
             try {
                 const res = await fetch('/api/listings/user');
-                if (res.ok) {
-                    const data = await res.json();
-                    setListings(data.listings);
+                if (!res.ok) {
+                    throw new Error('Failed to fetch listings');
                 }
+                const data = await res.json();
+                console.log('Fetched listings:', data.listings);
+                setListings(data.listings || []);
+                setIsMapLoaded(true);
             } catch (error) {
                 console.error('Error fetching listings:', error);
+                setError(error.message);
             }
         };
 
@@ -54,6 +61,7 @@ export default function Dashboard() {
             communityRank: "#12"
         });
     }, []);
+
 
     if (!mounted) {
         return (
@@ -188,48 +196,53 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                {/* Map Section */}
+                {isMapLoaded ? <FoodMap listings={listings} /> : null}
+
                 {/* Active Listings */}
-                <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20 mb-12">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-bold text-white">Active Listings</h2>
-                        <Link 
-                            href="/share-food"
-                            className="text-purple-400 hover:text-purple-300 text-sm"
-                        >
-                            Create New
-                        </Link>
-                    </div>
-                    
-                    {listings.length === 0 ? (
-                        <div className="text-center py-8">
-                            <p className="text-gray-400 mb-4">No active listings</p>
+                <div className="mb-12">
+                    <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-6 border border-purple-500/20 mb-12">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold text-white">Active Listings</h2>
                             <Link 
                                 href="/share-food"
-                                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
+                                className="text-purple-400 hover:text-purple-300 text-sm"
                             >
-                                Share Food
+                                Create New
                             </Link>
                         </div>
-                    ) : (
-                        <div className="space-y-4">
-                            {listings.map((listing) => (
-                                <div key={listing._id} className="bg-gray-800/50 rounded-xl p-4 border border-purple-500/10">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <h3 className="text-white font-medium">{listing.title}</h3>
-                                            <p className="text-gray-400 text-sm">Quantity: {listing.quantity}</p>
-                                            <p className="text-gray-400 text-sm">
-                                                Available until: {new Date(listing.availableUntil).toLocaleString()}
-                                            </p>
+                        
+                        {listings.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-400 mb-4">No active listings</p>
+                                <Link 
+                                    href="/share-food"
+                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
+                                >
+                                    Share Food
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {listings.map((listing) => (
+                                    <div key={listing._id} className="bg-gray-800/50 rounded-xl p-4 border border-purple-500/10">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <h3 className="text-white font-medium">{listing.title}</h3>
+                                                <p className="text-gray-400 text-sm">Quantity: {listing.quantity}</p>
+                                                <p className="text-gray-400 text-sm">
+                                                    Available until: {new Date(listing.availableUntil).toLocaleString()}
+                                                </p>
+                                            </div>
+                                            <span className="px-2 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
+                                                Active
+                                            </span>
                                         </div>
-                                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-sm rounded-full">
-                                            Active
-                                        </span>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Community Stats */}

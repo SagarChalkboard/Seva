@@ -2,6 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import MapComponent from '@/components/shared/MapComponent';
 
 export default function ShareFood() {
     const router = useRouter();
@@ -11,19 +12,48 @@ export default function ShareFood() {
         description: '',
         quantity: '',
         location: '',
+        coordinates: null,  // Added for map
         availableUntil: '',
         notes: ''
     });
+
+    const handleLocationSelect = async (location) => {
+        try {
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.lat},${location.lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+            );
+            const data = await response.json();
+            if (data.results[0]) {
+                setFormData(prev => ({
+                    ...prev,
+                    location: data.results[0].formatted_address,
+                    coordinates: location
+                }));
+            }
+        } catch (error) {
+            console.error('Error getting address:', error);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         
         try {
+            // Modify the data to match our FoodListing model
+            const submissionData = {
+                ...formData,
+                location: {
+                    type: 'Point',
+                    coordinates: [formData.coordinates.lng, formData.coordinates.lat],
+                    address: formData.location
+                }
+            };
+
             const res = await fetch('/api/listings/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(submissionData)
             });
 
             if (!res.ok) throw new Error('Failed to create listing');
@@ -36,8 +66,10 @@ export default function ShareFood() {
         }
     };
 
+    // Your existing JSX, but add the MapComponent before the location input:
     return (
         <main className="min-h-screen bg-black pt-20">
+            {/* Your existing header */}
             <div className="max-w-7xl mx-auto px-4 py-12">
                 <div className="text-center mb-16">
                     <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400 mb-4">
@@ -51,7 +83,7 @@ export default function ShareFood() {
                 <div className="max-w-2xl mx-auto">
                     <div className="bg-gray-900 rounded-2xl p-8 border border-purple-500/20">
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Food Title */}
+                            {/* Title field */}
                             <div>
                                 <label className="block text-gray-300 mb-2 text-sm">
                                     What food would you like to share?
@@ -66,7 +98,7 @@ export default function ShareFood() {
                                 />
                             </div>
 
-                            {/* Description */}
+                            {/* Description field */}
                             <div>
                                 <label className="block text-gray-300 mb-2 text-sm">
                                     Description
@@ -81,7 +113,7 @@ export default function ShareFood() {
                                 />
                             </div>
 
-                            {/* Quantity */}
+                            {/* Quantity field */}
                             <div>
                                 <label className="block text-gray-300 mb-2 text-sm">
                                     Quantity
@@ -96,11 +128,14 @@ export default function ShareFood() {
                                 />
                             </div>
 
-                            {/* Location */}
+                            {/* Location with Map */}
                             <div>
                                 <label className="block text-gray-300 mb-2 text-sm">
-                                    Pickup Location
+                                    Pickup Location (Click on map to set location)
                                 </label>
+                                <div className="mb-4">
+                                    <MapComponent onLocationSelect={handleLocationSelect} />
+                                </div>
                                 <input 
                                     type="text"
                                     required
@@ -111,7 +146,7 @@ export default function ShareFood() {
                                 />
                             </div>
 
-                            {/* Available Until */}
+                            {/* Available Until field */}
                             <div>
                                 <label className="block text-gray-300 mb-2 text-sm">
                                     Available Until
@@ -125,7 +160,7 @@ export default function ShareFood() {
                                 />
                             </div>
 
-                            {/* Additional Notes */}
+                            {/* Notes field */}
                             <div>
                                 <label className="block text-gray-300 mb-2 text-sm">
                                     Additional Notes

@@ -1,30 +1,46 @@
+// src/app/api/listings/route.js
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import FoodListing from '@/models/FoodListing';
+import jwt from 'jsonwebtoken';
 
-// GET: Retrieve all available listings
-export async function GET() {
-  try {
-    await dbConnect();
-    const listings = await FoodListing.find({ status: 'available' }).populate('provider', 'name email');
-    return NextResponse.json({ listings }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch listings' }, { status: 500 });
-  }
-}
-
-// POST: Create a new food listing
 export async function POST(req) {
-  try {
-    await dbConnect();
-    const data = await req.json();
+    try {
+        // Connect to database
+        await dbConnect();
+        
+        // Verify authentication token
+        const token = req.cookies.get('token')?.value;
+        if (!token) {
+            return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+        }
 
-    // Here you can add validation (or use a library like Zod)
-    // For now, we assume data includes: title, description, quantity, servings, location, availableUntil, provider
+        // Decode user ID from token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.userId;
 
-    const newListing = await FoodListing.create(data);
-    return NextResponse.json({ listing: newListing }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create listing' }, { status: 500 });
-  }
+        // Parse request body
+        const listingData = await req.json();
+        console.log('Received listing data:', listingData);
+
+        // Create new food listing
+        const listing = await FoodListing.create({
+            ...listingData,
+            userId: userId, // Ensure user ID is set
+            availableUntil: new Date(listingData.availableUntil)
+        });
+
+        // Respond with success and created listing
+        return NextResponse.json({ 
+            success: true, 
+            listing 
+        }, { status: 201 });
+
+    } catch (error) {
+        console.error('Listing creation error:', error);
+        return NextResponse.json({ 
+            error: 'Error creating listing',
+            details: error.message
+        }, { status: 500 });
+    }
 }

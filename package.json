@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.6",
     "@upstash/redis": "^1.28.4",
     "bcryptjs": "^2.4.3",
     "framer-motion": "^12.0.6",

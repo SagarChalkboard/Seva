@@ -1,8 +1,8 @@
 // src/app/api/listings/user/route.js
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Listing from '@/models/Listing';
 import jwt from 'jsonwebtoken';
+import dbConnect from '@/lib/mongodb';
+import FoodListing from '@/models/FoodListing';
 
 export async function GET(req) {
     try {
@@ -16,8 +16,14 @@ export async function GET(req) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.userId;
 
-        const listings = await Listing.find({ createdBy: userId })
-            .sort({ createdAt: -1 }); // Most recent first
+        console.log('Fetching listings for userId:', userId);
+
+        const listings = await FoodListing.find({ 
+            userId: userId,
+            availableUntil: { $gt: new Date() }
+        }).sort({ createdAt: -1 });
+
+        console.log('Found listings:', listings);
 
         return NextResponse.json({ listings });
     } catch (error) {
