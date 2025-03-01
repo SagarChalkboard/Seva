@@ -6,75 +6,48 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 
 export async function POST(req) {
-    // Comprehensive environment variable check
-    console.log('Checking environment variables:');
-    console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'SET' : 'NOT SET');
-    console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');
-
-    // Validate critical environment variables
-    if (!process.env.MONGODB_URI) {
-        console.error('CRITICAL ERROR: MONGODB_URI is NOT configured');
-        return NextResponse.json(
-            { error: 'Server configuration error: Database URI is missing' },
-            { status: 500 }
-        );
-    }
-
-    if (!process.env.JWT_SECRET) {
-        console.error('CRITICAL ERROR: JWT_SECRET is NOT configured');
-        return NextResponse.json(
-            { error: 'Server configuration error: JWT Secret is missing' },
-            { status: 500 }
-        );
-    }
-
     try {
-        // Ensure database connection
         await dbConnect();
-
-        // Parse request body
         const { email, password } = await req.json();
 
-        // Validate input
-        if (!email || !password) {
-            return NextResponse.json(
-                { error: 'Email and password are required' },
-                { status: 400 }
-            );
-        }
-
-        // Find user by email
+        // Find user
         const user = await User.findOne({ email });
         if (!user) {
             return NextResponse.json(
-                { error: 'Invalid email or password' },
+                { error: 'Invalid credentials' },
                 { status: 401 }
             );
         }
 
         // Verify password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
             return NextResponse.json(
-                { error: 'Invalid email or password' },
+                { error: 'Invalid credentials' },
                 { status: 401 }
             );
         }
 
-        // Create JWT token
+        // Create token - making sure JWT_SECRET is defined
+        if (!process.env.JWT_SECRET) {
+            console.error('JWT_SECRET is not defined');
+            return NextResponse.json(
+                { error: 'Server configuration error' },
+                { status: 500 }
+            );
+        }
+
+        // Create JWT with a long expiry
         const token = jwt.sign(
-            { 
-                userId: user._id,
-                email: user.email 
-            },
+            { userId: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '30d' } // 30 days
         );
 
-        // Create response with cookie
+        // Create response
         const response = NextResponse.json(
             { 
-                message: 'Login successful',
+                success: true,
                 user: {
                     id: user._id,
                     name: user.name,
@@ -84,29 +57,22 @@ export async function POST(req) {
             { status: 200 }
         );
 
-        // Set HTTP-only cookie
+        // Set cookie with more permissive options
         response.cookies.set('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 7 // 7 days
+            sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
+            maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+            path: '/'  // Make sure cookie is available across the site
         });
 
+        console.log('Login successful, token set in cookie');
         return response;
 
     } catch (error) {
-        // Detailed error logging
-        console.error('Comprehensive Login Error:', {
-            message: error.message,
-            name: error.name,
-            stack: error.stack
-        });
-
+        console.error('Login error:', error);
         return NextResponse.json(
-            { 
-                error: 'Internal server error',
-                details: error.message 
-            },
+            { error: 'Internal server error' },
             { status: 500 }
         );
     }
