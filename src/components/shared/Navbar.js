@@ -95,12 +95,9 @@ export default function Navbar() {
             <nav className="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <Link 
-                            href="/" 
-                            className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400"
-                        >
+                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
                             SEVA
-                        </Link>
+                        </span>
                         
                         {/* Loading indicator */}
                         <div className="w-8 h-8 rounded-full border-2 border-gray-800 border-t-purple-500 animate-spin"></div>
