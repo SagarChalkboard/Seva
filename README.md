@@ -1,88 +1,64 @@
 <div align="center">
-  <img src="https://placehold.co/600x200/5D3FD3/ffffff?text=SEVA&font=montserrat" alt="SEVA Logo" width="450px"/>
-  <h1>No One Sleeps Hungry</h1>
-  <p><i>Connecting those with excess food to those who need it most</i></p>
+  <h1>SEVA</h1>
+  <p><i>No One Sleeps Hungry</i></p>
 
 [![Next.js](https://img.shields.io/badge/Next.js-13.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
-[![Socket.io](https://img.shields.io/badge/Socket.io-4.0-white?style=for-the-badge&logo=socket.io)](https://socket.io/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.3-blue?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Google Maps](https://img.shields.io/badge/Google_Maps-API-red?style=for-the-badge&logo=google-maps)](https://developers.google.com/maps/)
 
 </div>
 
-## 🚀 About SEVA
+## About SEVA
 
-SEVA (meaning "selfless service" in Sanskrit) is a revolutionary platform connecting people with excess food to those experiencing food insecurity. In a world where 40% of food is wasted while millions go hungry, SEVA creates a direct peer-to-peer solution that builds community through the sharing of meals.
+SEVA is a web platform designed to connect people with excess food to those who need it in their local community. The name "SEVA" means "selfless service" in Sanskrit, reflecting our mission to help reduce food waste while addressing hunger through community action.
 
-### The Problem We're Solving
+### The Problem
 
-- **Food Waste**: ⅓ of all food produced globally is wasted
-- **Food Insecurity**: Millions struggle to access nutritious meals daily
-- **Disconnected Communities**: Neighbors who could help each other lack the means to connect
-- **Environmental Impact**: Food waste contributes significantly to greenhouse gas emissions
+- Food waste is a major issue, with significant amounts of edible food being thrown away
+- Many people struggle with food insecurity, even in areas of plenty
+- There's often a disconnect between those with excess food and those who need it
 
-### Our Mission
+### Our Solution
 
-To create a world where no one sleeps hungry by leveraging technology to connect those with excess food directly to those who need it, fostering community and reducing waste simultaneously.
+SEVA provides a direct peer-to-peer platform that allows people to:
+- Share food they can't use before it goes to waste
+- Find available food in their community
+- Connect through a simple, location-based interface
 
-## ✨ Key Features
+## Current Features
 
-### For Food Donors
-- **Quick Food Listing**: Share excess food in just a few taps
-- **Flexible Scheduling**: Set pickup times that work for your schedule
-- **Location Control**: Set specific pickup locations with privacy controls
-- **Real-time Notifications**: Get instant alerts when someone reserves your food
-- **Direct Messaging**: Communicate securely with recipients
-- **Impact Tracking**: See how many people you've helped
+### Food Sharing
+- Create food listings with details about what you're offering
+- Set pickup locations using Google Maps integration
+- Specify availability times and food descriptions
 
-### For Food Recipients
-- **Discover Nearby Food**: Find available food in your neighborhood
-- **Food Filters**: Search by dietary restrictions, food type, and distance
-- **Real-time Reservations**: Claim available food before others
-- **Secure Communication**: Message donors directly through the app
-- **Pickup Instructions**: Get clear directions for food pickup
+### Food Finding
+- Browse available food listings in your area
+- View food details and locations on a map
+- Reserve food you're interested in
 
-### Platform Features
-- **Real-time Updates**: Instant notifications about food availability
-- **User Verification**: Trust and safety features for all users
-- **Food Safety Guidelines**: Clear protocols for safe food sharing
-- **Interactive Maps**: Location-based matching and directions
-- **Community Building**: Foster connections between neighbors
-- **Impact Metrics**: Track community-wide progress against hunger
+### User Experience
+- User authentication (signup, login, logout)
+- Dashboard to track your food listings and activity
+- Mobile-responsive design
 
-## 🛠️ Tech Stack
+### Technical Implementation
+- Real-time location-based food discovery
+- User authentication and account management
+- MongoDB database for storing user and listing information
+- Google Maps integration for location services
 
-SEVA leverages cutting-edge technology to create a scalable, responsive platform:
+## Tech Stack
 
-- **Frontend**: Next.js, Tailwind CSS, React Hooks
-- **Backend**: Next.js API Routes, Node.js
-- **Database**: MongoDB with Mongoose ODM
+- **Frontend**: Next.js, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: MongoDB with Mongoose
 - **Authentication**: JWT, bcrypt
-- **Real-time Features**: Socket.io for messaging and notifications
-- **Maps & Location**: Google Maps API with Geocoding
-- **State Management**: React Context API
-- **Deployment**: Vercel
+- **Maps & Location**: Google Maps API
+- **Deployment**: Ready for Vercel deployment
 
-## 📱 Screenshots
-
-<div align="center">
-  <img src="https://placehold.co/300x600/5D3FD3/ffffff?text=Home+Screen" alt="SEVA Home" width="200"/>
-  <img src="https://placehold.co/300x600/5D3FD3/ffffff?text=Food+Listings" alt="Food Listings" width="200"/>
-  <img src="https://placehold.co/300x600/5D3FD3/ffffff?text=Share+Food" alt="Share Food" width="200"/>
-</div>
-
-## 🌟 Impact & Metrics
-
-SEVA is already making a difference:
-
-- **15,000+** Meals shared through our platform
-- **5,000+** Active users across multiple communities
-- **200+** Neighborhoods actively participating
-- **60%** Reduction in food waste for participating households
-- **85%** of users report increased sense of community connection
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v14 or later)
@@ -116,39 +92,25 @@ npm run dev
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## 🔮 Future Roadmap
+## Future Development Goals
 
-We're just getting started! Here's what's coming next:
+Features we're working on implementing:
+- In-app messaging between food donors and recipients
+- Real-time notifications for food availability
+- Enhanced food safety guidelines and verification
+- Community impact tracking
+- Mobile app versions
 
-- **Mobile Apps**: Native iOS and Android applications
-- **Community Events**: Organize food sharing events and meetups
-- **Business Partnerships**: Connect with restaurants and grocery stores
-- **Volunteer Network**: Coordinate delivery for those unable to pickup
-- **Analytics Dashboard**: Advanced impact metrics and visualization
-- **Internationalization**: Support for multiple languages
-- **Food Quality AI**: Use image recognition to verify food quality
+## The Project
 
-## 👥 The Team
+SEVA was developed as a hackathon project to address food waste and hunger issues in our communities. The project is in active development.
 
-SEVA was created by a passionate team of developers committed to fighting hunger through technology. Connect with us!
+## Contact
 
-## 🤝 Contributing
-
-We welcome contributions from the community! Check out our [Contribution Guidelines](CONTRIBUTING.md) to get started.
-
-## 📄 License
-
-SEVA is open source software licensed under the [MIT license](LICENSE).
-
-## 📬 Contact
-
-For questions, partnerships, or support:
-- Email: contact@seva-app.org
-- Twitter: [@seva_app](https://twitter.com/seva_app)
-- Website: [seva-app.org](https://seva-app.org)
+For questions or contributions, please open an issue on this repository.
 
 ---
 
 <div align="center">
-  <p>Join us in creating a world where <b>No One Sleeps Hungry</b>.</p>
+  <p>Working toward a world where <b>No One Sleeps Hungry</b>.</p>
 </div>
