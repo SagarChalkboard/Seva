@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { MapPin, Users, Package, TrendingUp, Award } from 'lucide-react';
-import FoodMap from '@/components/FoodMap';
+import GoogleMapsProvider from '@/components/GoogleMapsProvider';
+import MapView from '@/components/shared/MapView';
 
 const impactData = [
     { month: 'Jan', donations: 65, people: 120 },
@@ -32,6 +33,7 @@ export default function Dashboard() {
     const [stats, setStats] = useState(initialStats);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const [error, setError] = useState(null);
+    const [userLocation, setUserLocation] = useState(null);
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -61,7 +63,6 @@ export default function Dashboard() {
             communityRank: "#12"
         });
     }, []);
-
 
     if (!mounted) {
         return (
@@ -197,7 +198,9 @@ export default function Dashboard() {
                 </div>
 
                 {/* Map Section */}
-                {isMapLoaded ? <FoodMap listings={listings} /> : null}
+                <GoogleMapsProvider>
+                    <MapView listings={listings} userLocation={userLocation} />
+                </GoogleMapsProvider>
 
                 {/* Active Listings */}
                 <div className="mb-12">
